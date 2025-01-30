@@ -1,23 +1,39 @@
-# main.tf
-provider "azurerm" {
-  features {}
+terraform {
+  backend "azurerm" {}
+
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~>3.0"
+    }
+  }
 }
 
-resource "azurerm_resource_group" "example" {
-  name     = "rg-${var.environment}"
+provider "azurerm" {
+  features {}
+
+  subscription_id = var.subscription_id
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  tenant_id       = var.tenant_id
+}
+
+resource "azurerm_resource_group" "rg" {
+  name     = var.resource_group_name
   location = var.location
 }
 
-resource "azurerm_storage_account" "example" {
-  name                     = "st${var.environment}account"
-  resource_group_name      = azurerm_resource_group.example.name
-  location                 = azurerm_resource_group.example.location
-  account_tier              = "Standard"
+resource "azurerm_storage_account" "sa" {
+  name                     = var.storage_account_name
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
   account_replication_type = "LRS"
 }
 
-resource "azurerm_storage_container" "example" {
-  name                  = "container-${var.environment}"
-  storage_account_name = azurerm_storage_account.example.name
+resource "azurerm_storage_container" "container" {
+  name                  = var.storage_container_name
+  storage_account_name  = azurerm_storage_account.sa.name
+  container_access_type = "private"
 }
 
