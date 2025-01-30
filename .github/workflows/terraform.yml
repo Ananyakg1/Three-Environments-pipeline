@@ -74,7 +74,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-         creds: ${{ secrets.AZURE_SECRETS }}
+        creds: ${{ secrets.AZURE_SECRETS }}
 
     # Step 3: Set up Python for Checkov
     - name: Set up Python
@@ -82,36 +82,35 @@ jobs:
       with:
         python-version: '3.11'
 
-    # Step 4: Install Terraform, TFLint, and Checkov in Parallel
-    - name: Install Terraform, TFLint, and Checkov
+    # Step 4: Install Terraform
+    - name: Install Terraform
       run: |
-        echo "Installing Terraform, TFLint, and Checkov..."
-        (
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add - &&
-          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" &&
-          sudo apt-get update && sudo apt-get install terraform -y
-        ) &
-
-        (
-          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-        ) &
-
-        (
-          pip install --upgrade pip &&
-          pip install checkov
-        ) &
-
-        wait
-        echo "Installation completed."
+        echo "Installing Terraform..."
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+        sudo apt-get update && sudo apt-get install terraform -y
         terraform --version
-        tflint --version
-        checkov --version || true
 
-    # Step 5: Run TFLint for Terraform Code Quality
+    # Step 5: Install TFLint
+    - name: Install TFLint
+      run: |
+        echo "Installing TFLint..."
+        curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+        tflint --version
+
+    # Step 6: Install Checkov
+    - name: Install Checkov
+      run: |
+        echo "Installing Checkov..."
+        pip install --upgrade pip
+        pip install checkov
+        checkov --version
+
+    # Step 7: Run TFLint for Terraform Code Quality
     - name: Run TFLint
       run: tflint || true
 
-    # Step 6: Run Checkov for Security Scanning (Only if Directory Exists)
+    # Step 8: Run Checkov for Security Scanning (Only if Directory Exists)
     - name: Run Checkov for QA
       if: matrix.environment == 'qa'
       run: |
@@ -130,13 +129,13 @@ jobs:
           echo "Skipping Checkov: ./prod directory not found"
         fi
 
-    # Step 7: Set up Terraform with caching
+    # Step 9: Set up Terraform with caching
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 1.7.0
 
-    # Step 8: Initialize Terraform Backend (Fixing Required Fields)
+    # Step 10: Initialize Terraform Backend
     - name: Terraform Init
       run: |
         terraform init -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
@@ -144,25 +143,25 @@ jobs:
                        -backend-config="key=${{ matrix.environment }}.tfstate" \
                        -input=false -no-color
 
-    # Step 9: Terraform Validate
+    # Step 11: Terraform Validate
     - name: Terraform Validate
       run: terraform validate -no-color
 
-    # Step 10: Terraform Plan
+    # Step 12: Terraform Plan
     - name: Terraform Plan (${{ matrix.environment }})
       run: terraform plan -var-file=${{ matrix.environment }}.tfvars -out=tfplan.binary -no-color -input=false
 
-    # Step 11: Convert Plan to JSON (For Cost Estimation)
+    # Step 13: Convert Plan to JSON (For Cost Estimation)
     - name: Terraform Show
       run: terraform show -json tfplan.binary > plan.json
 
-    # Step 12: Install Infracost
+    # Step 14: Install Infracost
     - name: Install Infracost
       run: |
         curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
         infracost --version
 
-    # Step 13: Run Infracost for Cost Estimation
+    # Step 15: Run Infracost for Cost Estimation
     - name: Run Infracost (${{ matrix.environment }})
       env:
         INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
@@ -170,7 +169,7 @@ jobs:
         infracost configure set api_key $INFRACOST_API_KEY
         infracost breakdown --path=plan.json --format=json --out-file=infracost-report.json
 
-    # Step 14: Post Infracost Comment (Only for Pull Requests)
+    # Step 16: Post Infracost Comment (Only for Pull Requests)
     - name: Post Infracost Comment
       if: github.event_name == 'pull_request'
       run: |
@@ -179,10 +178,7 @@ jobs:
         --pull-request=${{ github.event.pull_request.number }} \
         --github-token=${{ secrets.GITHUB_TOKEN }}
 
-    # Step 15: Apply Changes in Main Branch
+    # Step 17: Apply Changes in Main Branch
     - name: Terraform Apply (${{ matrix.environment }})
       if: github.ref == 'refs/heads/main'
       run: terraform apply -auto-approve -input=false tfplan.binary
-
-
-
