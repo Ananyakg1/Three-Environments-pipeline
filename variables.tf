@@ -1,29 +1,31 @@
+# variables.tf
 variable "location" {
-  description = "The Azure region in which to create the resources."
   type        = string
+  description = "The Azure region for the resources"
 }
 
 variable "environment" {
-  description = "The environment in which to deploy (dev, qa, prod)."
   type        = string
+  description = "The environment (dev, qa, prod)"
 }
 
 variable "subscription_id" {
-  description = "Azure Subscription ID"
   type        = string
+  description = "The Azure Subscription ID"
 }
 
 variable "client_id" {
-  description = "Azure Client ID"
   type        = string
+  description = "The Azure Client ID"
 }
 
 variable "client_secret" {
-  description = "Azure Client Secret"
   type        = string
+  description = "The Azure Client Secret"
 }
 
 variable "tenant_id" {
-  description = "Azure Tenant ID"
   type        = string
+  description = "The Azure Tenant ID"
 }
+
