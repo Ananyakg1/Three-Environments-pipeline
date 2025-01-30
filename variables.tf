@@ -1,32 +1,39 @@
-# variables.tf
 variable "location" {
-  type        = string
-  description = "The Azure region for the resources"
+  type    = string
+  default = "East US"
 }
 
 variable "environment" {
-  type        = string
-  description = "The environment (dev, qa, prod)"
+  type    = string
 }
 
 variable "subscription_id" {
-  type        = string
-  description = "The Azure Subscription ID"
-}
-
-variable "client_id" {
-  type        = string
-  description = "The Azure Client ID"
-}
-
-variable "client_secret" {
-  type        = string
-  description = "The Azure Client Secret"
+  type    = string
 }
 
 variable "tenant_id" {
-  type        = string
-  description = "The Azure Tenant ID"
+  type    = string
 }
+
+variable "client_id" {
+  type    = string
+}
+
+variable "client_secret" {
+  type    = string
+}
+
+variable "resource_group_name" {
+  type = string
+}
+
+variable "storage_account_name" {
+  type = string
+}
+
+variable "container_name" {
+  type = string
+}
+
 
 
