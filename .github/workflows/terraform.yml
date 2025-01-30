@@ -96,8 +96,14 @@ jobs:
       run: tflint || true
 
     # Step 6: Run Checkov for Security Scanning
-    - name: Run Checkov
-      run: checkov -d . || true
+    - name: Run Checkov for QA
+      run: checkov -d ./qa
+
+    - name: Run Checkov for Prod
+      run: checkov -d ./prod
+
+
+      
 
     # Step 7: Set up Terraform with caching
     - name: Set up Terraform
