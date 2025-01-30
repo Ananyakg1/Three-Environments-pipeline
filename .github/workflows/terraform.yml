@@ -42,7 +42,7 @@
 #       with:
 #         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-name: 'Terraform CI/CD'
+name: 'Terraform'
 
 on:
   push:
@@ -54,6 +54,7 @@ permissions:
 
 jobs:
   terraform:
+    name: 'Terraform'
     runs-on: ubuntu-latest
     environment: production
 
@@ -62,65 +63,82 @@ jobs:
         shell: bash
 
     steps:
-    # Checkout the repository
+    # Step 1: Checkout the repository
     - name: Checkout the repository
       uses: actions/checkout@v4
 
-    # Log in to Azure
+    # Step 2: Log in to Azure
     - name: Log in to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_SECRETS }}
+         
 
-    # Install Checkov
+    # Step 3: Set up Terraform
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0
+
+    # Step 4: Install Checkov
     - name: Install Checkov
       run: |
         python -m pip install --upgrade pip
         pip install checkov
         checkov --version  # Verify Checkov is installed
 
-    # Run Checkov on the code
+    # Step 5: Run Checkov to scan the Terraform code
     - name: Run Checkov
       run: checkov -d . || true
 
-    # Install TFLint
+    # Step 6: Install TFLint
     - name: Install TFLint
       run: |
         curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
         tflint --version  # Verify TFLint is installed
 
-    # Run TFLint to lint Terraform files
+    # Step 7: Run TFLint to lint Terraform files
     - name: Run TFLint
-      run: tflint || true
+      run: tflint || true  # If you want the pipeline to fail on issues, remove "|| true"
 
-    # Set up Terraform
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: 1.0.0
-
-    # Initialize Terraform
+    # Step 8: Terraform Init
     - name: Terraform Init
       run: terraform init
 
-    # Plan Terraform for Dev
-    - name: Terraform Plan for Dev
-      run: terraform plan -var-file=dev.tfvars -out=tfplan.binary
+    # Step 9: Terraform Plan
+    - name: Terraform Plan
+      run: terraform plan -out=tfplan.binary -var-file=dev.tfvars
 
-    # Apply Terraform for Dev
-    - name: Terraform Apply for Dev
-      run: terraform apply -var-file=dev.tfvars -auto-approve
+    # Step 10: Terraform Show
+    # Convert the Terraform binary plan to JSON for Infracost
+    - name: Terraform Show
+      run: terraform show -json tfplan.binary > plan.json
 
-    # Plan and Apply for QA
-    - name: Terraform Plan for QA
-      run: terraform plan -var-file=qa.tfvars -out=tfplan.binary
+    # Step 11: Install Infracost
+    - name: Install Infracost
+      run: |
+        curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+        infracost --version  # Verify Infracost is installed
 
-    - name: Terraform Apply for QA
-      run: terraform apply -var-file=qa.tfvars -auto-approve
+    # Step 12: Configure Infracost API key
+    - name: Configure Infracost API key
+      run: infracost configure set api_key ${{ secrets.INFRACOST_API_KEY }}
 
-    # Plan and Apply for Prod
-    - name: Terraform Plan for Prod
-      run: terraform plan -var-file=prod.tfvars -out=tfplan.binary
+    # Step 13: Run Infracost to calculate costs
+    - name: Run Infracost
+      run: |
+        infracost breakdown --path=plan.json \
+        --format=json --out-file=infracost-report.json
 
-    - name: Terraform Apply for Prod
-      run: terraform apply -var-file=prod.tfvars -auto-approve
+    # Step 14: Post Infracost comment to PR (if applicable)
+    - name: Post Infracost Comment
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+        infracost comment github --path=infracost-report.json \
+        --repo=$GITHUB_REPOSITORY \
+        --pull-request=$GITHUB_REF_NAME \
+        --github-token=${{ secrets.GITHUB_TOKEN }}
+
+    # Step 15: Terraform Apply
+    - name: Terraform Apply
+      run: terraform apply -auto-approve -input=false -var-file=dev.tfvars
