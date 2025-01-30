@@ -102,7 +102,7 @@ jobs:
     - name: Install Checkov
       run: |
         echo "Installing Checkov..."
-        pip install --upgrade pip
+        # pip install --upgrade pip
         pip3 install checkov
         checkov --version
 
