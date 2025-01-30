@@ -71,8 +71,8 @@ jobs:
     - name: Log in to Azure
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_SECRETS }}
-         
+        creds: |
+         ${{ secrets.AZURE_SECRETS }}
 
     # Step 3: Set up Terraform
     - name: Set up Terraform
@@ -142,3 +142,4 @@ jobs:
     # Step 15: Terraform Apply
     - name: Terraform Apply
       run: terraform apply -auto-approve -input=false -var-file=dev.tfvars
+
