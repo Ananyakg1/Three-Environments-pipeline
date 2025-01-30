@@ -1,3 +1,5 @@
-location        = "East US"
+# qa.tfvars
+location        = "West US"
 environment     = "qa"
+
 
