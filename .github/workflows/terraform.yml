@@ -74,7 +74,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        creds: ${{ secrets.AZURE_SECRETS }}
 
     # Step 3: Set up Python for Checkov
     - name: Set up Python
