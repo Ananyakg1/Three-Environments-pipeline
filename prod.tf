@@ -1,3 +1,4 @@
-location        = "East US"
+# prod.tfvars
+location        = "Central US"
 environment     = "prod"
 
