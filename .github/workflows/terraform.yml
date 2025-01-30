@@ -103,7 +103,7 @@ jobs:
       run: |
         echo "Installing Checkov..."
         pip install --upgrade pip
-        pip install checkov
+        pip3 install checkov
         checkov --version
 
     # Step 7: Run TFLint for Terraform Code Quality
