@@ -105,7 +105,7 @@ jobs:
         echo "Installation completed."
         terraform --version
         tflint --version
-        checkov --version
+        checkov --version || true
 
     # Step 5: Run TFLint for Terraform Code Quality
     - name: Run TFLint
