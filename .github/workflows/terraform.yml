@@ -103,8 +103,7 @@ jobs:
         tflint --version
 
     # Step 6: Install Checkov
-    - name: Install Checkov
-      run: pip install --upgrade checkov
+    
 
 
     # Step 7: Run Checkov for Security Scanning
