@@ -125,7 +125,7 @@ jobs:
       if: matrix.environment == 'prod'
       run: |
         if [ -d "./prod" ]; then
-          checkov -d ./qa --skip-check CKV_AZURE_33 || true
+          checkov -d ./qa || true
 
         else
           echo "Skipping Checkov: ./prod directory not found"
