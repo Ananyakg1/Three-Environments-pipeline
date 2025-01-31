@@ -143,7 +143,8 @@ jobs:
 
     # Step 11: Terraform Plan
     - name: Terraform Plan (${{ matrix.environment }})
-      run: terraform plan -var-file=${{ matrix.environment }}.tfvars -out=tfplan.binary -no-color -input=false
+      run: terraform plan -var-file=${{ matrix.environment }}/terraform.tfvars -out=tfplan.binary -no-color -input=false
+
 
     # Step 12: Convert Plan to JSON (For Cost Estimation)
     - name: Terraform Show
