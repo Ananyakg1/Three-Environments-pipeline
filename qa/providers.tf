@@ -1,18 +1,13 @@
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.0"
-    }
-  }
-
-  backend "azurerm" {
-    storage_account_name = "yourbackendstorage"
-    container_name       = "terraform-state"
-    key                  = "qa.tfstate"
-  }
-}
-
 provider "azurerm" {
   features {}
 }
+
+terraform {
+  backend "azurerm" {
+    resource_group_name   = "vm"
+    storage_account_name  = "hvms"
+    container_name        = "hvmsc"
+    key                   = "terraform.tfstate"
+  }
+}
+
