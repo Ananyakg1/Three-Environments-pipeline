@@ -108,5 +108,3 @@ jobs:
         if: matrix.environment != 'dev'
         run: terraform apply -auto-approve -var-file=terraform.tfvars
         working-directory: ${{ matrix.environment }}
-
-
