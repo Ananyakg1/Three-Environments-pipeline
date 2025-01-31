@@ -1,14 +1,10 @@
-variable "resource_group_name" {
-  description = "Resource group name"
-  type        = string
-}
-
-variable "storage_account_name" {
-  description = "Storage account name"
-  type        = string
-}
-
 variable "location" {
-  description = "Azure region"
+  description = "The location for the resource group"
   type        = string
 }
+
+variable "env" {
+  description = "The environment name"
+  type        = string
+}
+
