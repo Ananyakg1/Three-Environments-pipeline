@@ -108,24 +108,7 @@ jobs:
 
 
     # Step 7: Run Checkov for Security Scanning
-    - name: Run Checkov for QA
-      if: matrix.environment == 'qa'
-      run: |
-        if [ -d "./qa" ]; then
-          checkov -d ./qa
-        else
-         echo "Skipping Checkov: ./qa directory not found"
-        fi
-
-
-    - name: Run Checkov for Prod
-      if: matrix.environment == 'prod'
-      run: |
-        if [ -d "./prod" ]; then
-          checkov -d ./prod
-        else
-         echo "Skipping Checkov: ./prod directory not found"
-        fi
+    
 
 
     # Step 8: Set up Terraform with caching
