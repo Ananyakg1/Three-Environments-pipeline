@@ -123,9 +123,10 @@ jobs:
 
     # Step 8: Set up Terraform with caching
     - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
+      uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.7.0
+
 
     # Step 9: Initialize Terraform Backend
     - name: Terraform Init
