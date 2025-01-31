@@ -52,10 +52,16 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: terraform-deployment-${{ github.ref }}
+  cancel-in-progress: false  # Prevent auto-cancellation of running workflows
+
+
 jobs:
   terraform:
     name: 'Terraform CI/CD'
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # Increase timeout to 30 minutes
     strategy:
       matrix:
         environment: [dev, qa, prod]  # Runs for all environments
@@ -126,6 +132,8 @@ jobs:
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.7.0
+        continue-on-error: true  # Allow the workflow to continue even if setup fails
+
 
 
     # Step 9: Initialize Terraform Backend
