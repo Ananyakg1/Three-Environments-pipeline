@@ -60,6 +60,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+    # Step 2: Azure Authentication (Using GitHub Secrets)
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+         creds: ${{ secrets.AZURE_SECRETS }}
+
       # Step 1: Install Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
