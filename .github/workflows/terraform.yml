@@ -103,6 +103,10 @@ jobs:
         pip install checkov
         echo "Checkov Installed at: $(which checkov)"
         checkov --version || echo "Checkov installation failed"
+        
+    - name: Debug - Check Checkov Version
+      run: checkov --version
+
 
     # Step 7: Run Checkov for Security Scanning
     - name: Run Checkov for QA
@@ -118,10 +122,11 @@ jobs:
       if: matrix.environment == 'prod'
       run: |
         if [ -d "./prod" ]; then
-          checkov -d ./prod --verbose
+          checkov -d ./prod
         else
-          echo "Skipping Checkov: ./prod directory not found"
+         echo "Skipping Checkov: ./prod directory not found"
         fi
+
 
     # Step 8: Set up Terraform with caching
     - name: Set up Terraform
