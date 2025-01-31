@@ -98,11 +98,8 @@ jobs:
 
     # Step 6: Install Checkov
     - name: Install Checkov
-      run: |
-        python -m pip install --upgrade pip
-        pip install checkov
-        echo "Checkov Installed at: $(which checkov)"
-        checkov --version || echo "Checkov installation failed"
+      run: pip install --upgrade checkov
+
         
     - name: Debug - Check Checkov Version
       run: checkov --version
