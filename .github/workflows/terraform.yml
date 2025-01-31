@@ -100,10 +100,6 @@ jobs:
     - name: Install Checkov
       run: pip install --upgrade checkov
 
-        
-    - name: Debug - Check Checkov Version
-      run: checkov --version
-
 
     # Step 7: Run Checkov for Security Scanning
     - name: Run Checkov for QA
