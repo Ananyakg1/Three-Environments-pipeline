@@ -112,10 +112,11 @@ jobs:
       if: matrix.environment == 'qa'
       run: |
         if [ -d "./qa" ]; then
-          checkov -d ./qa --verbose
+          checkov -d ./qa
         else
-          echo "Skipping Checkov: ./qa directory not found"
+         echo "Skipping Checkov: ./qa directory not found"
         fi
+
 
     - name: Run Checkov for Prod
       if: matrix.environment == 'prod'
