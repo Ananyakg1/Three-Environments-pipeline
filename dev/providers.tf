@@ -4,10 +4,10 @@ provider "azurerm" {
 
 terraform {
   backend "azurerm" {
-    resource_group_name   = "vm"
-    storage_account_name  = "hvms"
-    container_name        = "hvmsc"
-    key                   = "terraform.tfstate"
+    resource_group_name  = "dem-resource-group"
+    storage_account_name = "dem-storage-acc"
+    container_name       = "dem-container"
+    key                  = "terraform.tfstate"
   }
 }
 
