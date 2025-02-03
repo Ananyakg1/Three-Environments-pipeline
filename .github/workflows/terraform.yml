@@ -54,18 +54,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        environment: [dev, qa, prod]  # Runs sequentially
+        environment: [dev, qa, prod]  # Sequential execution of environments
 
     steps:
       # Step 1: Checkout the Repository
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Azure Login (Using GitHub Secrets)
+      # Step 2: Azure Login using GitHub Secrets (Service Principal)
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_SECRETS }}
+          creds: ${{ secrets.AZURE_SECRETS }}   # Make sure this secret is configured in GitHub
 
       # Step 3: Install Terraform
       - name: Setup Terraform
@@ -73,17 +73,25 @@ jobs:
         with:
           terraform_version: 1.5.0
 
-      # Step 4: Terraform Init
+      # Step 4: Terraform Initialization
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="storage_account_name=dem-storage-acc" \
+                            -backend-config="container_name=dem-container" \
+                            -backend-config="key=terraform.tfstate" \
+                            -backend-config="resource_group_name=dem-resource-group"
         working-directory: ${{ matrix.environment }}
 
-      # Step 5: Terraform Plan
+      # Step 5: Terraform Validation
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: ${{ matrix.environment }}
+
+      # Step 6: Terraform Plan
       - name: Terraform Plan
         run: terraform plan -var-file=terraform.tfvars
         working-directory: ${{ matrix.environment }}
 
-      # Step 6: Terraform Apply (Only for QA and PROD)
+      # Step 7: Terraform Apply (Only for QA and PROD)
       - name: Terraform Apply (Only for QA and PROD)
         if: matrix.environment != 'dev'
         run: terraform apply -auto-approve -var-file=terraform.tfvars
