@@ -1,2 +1,3 @@
-location = "West US"
+location = "Central US"
 env      = "prod"
+
