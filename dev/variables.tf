@@ -1,10 +1,10 @@
 variable "location" {
-  description = "The location for the resource group"
+  description = "Azure Region"
   type        = string
 }
 
 variable "env" {
-  description = "The environment name"
+  description = "Environment Name"
   type        = string
 }
 
