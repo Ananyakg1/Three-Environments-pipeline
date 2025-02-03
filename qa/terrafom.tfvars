@@ -1,2 +1,2 @@
-location = "East US"
+location = "West US"
 env      = "qa"
