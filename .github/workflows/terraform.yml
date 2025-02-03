@@ -75,11 +75,9 @@ jobs:
 
       # Step 4: Terraform Initialization
       - name: Terraform Init
-        run: terraform init -backend-config="storage_account_name=dem-storage-acc" \
-                            -backend-config="container_name=dem-container" \
-                            -backend-config="key=terraform.tfstate" \
-                            -backend-config="resource_group_name=dem-resource-group"
+        run: terraform init -backend-config="storage_account_name=dem-storage-acc" -backend-config="container_name=dem-container" -backend-config="key=terraform.tfstate" -backend-config="resource_group_name=dem-resource-group"
         working-directory: ${{ matrix.environment }}
+
 
       # Step 5: Terraform Validation
       - name: Terraform Validate
