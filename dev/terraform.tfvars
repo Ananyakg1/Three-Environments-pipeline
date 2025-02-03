@@ -1,4 +1,5 @@
-location = "Central US"
+location = "East US"
 env      = "dev"
+
 
 
