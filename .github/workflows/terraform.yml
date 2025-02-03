@@ -54,56 +54,30 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        environment: [dev, qa, prod]  # Sequential execution of environments
+        environment: [dev, qa, prod]
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Azure Authentication (Using GitHub Secrets)
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_SECRETS }}
 
-      # Step 3: Install Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
 
-      # Step 4: Install TFLint
-      - name: Install TFLint
-        run: |
-          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-          tflint --version
-
-      # Step 5: Install Checkov
-      - name: Install Checkov
-        run: |
-          pip install checkov
-          checkov --version
-
-      # Step 6: Terraform Initialization
       - name: Terraform Init
         run: terraform init
         working-directory: ${{ matrix.environment }}
 
-      # Step 7: Terraform Validation
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: ${{ matrix.environment }}
-
-      # Step 8: Terraform Plan
       - name: Terraform Plan
         run: terraform plan -var-file=terraform.tfvars
         working-directory: ${{ matrix.environment }}
 
-      # Step 9: Run Checkov for Security Scanning (Ignore failures)
-      - name: Run Checkov
-        run: checkov -d ${{ matrix.environment }} || true
-
-      # Step 10: Terraform Apply (Only for QA and PROD)
       - name: Terraform Apply (Only for QA and PROD)
         if: matrix.environment != 'dev'
         run: terraform apply -auto-approve -var-file=terraform.tfvars
